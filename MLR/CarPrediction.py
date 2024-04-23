@@ -19,7 +19,7 @@ def IQR_outlier_detection(data):
     IQR = Q3 - Q1
     lower_bound = Q1 - 1.5 * IQR
     upper_bound = Q3 + 1.5 * IQR
-    return (data < lower_bound) | (data > upper_bound)
+    return data[(data < lower_bound) | (data > upper_bound)]
 
 # Step 2: Load the data
 car_data = pd.read_csv(r'MLR\car details v4.csv') # or use 'MLR\\car details v4.csv' instead of the raw string
@@ -69,3 +69,21 @@ car_data.drop(drop_cols, axis=1, inplace=True)
 #print(car_data[numerical_cols].head())
 
 #Outlier Detections
+
+outliers = []
+
+for col in numerical_cols:
+    outliers.append(IQR_outlier_detection(car_data[col]))
+
+# Display the outliers
+outliers_df = pd.DataFrame(outliers).T
+#print(outliers_df.head())
+outliers_df.info()
+
+# Cleaning the data by removing the outliers
+for col in numerical_cols:
+    car_data = car_data[~car_data[col].isin(outliers_df[col])]
+
+# Display the cleaned data
+#print(car_data.head())
+car_data.info()
