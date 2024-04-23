@@ -87,3 +87,47 @@ for col in numerical_cols:
 # Display the cleaned data
 #print(car_data.head())
 car_data.info()
+
+# EDA
+
+# Categorical Variable Univariate Analysis 
+
+# for col in categorical_cols:
+#     sns.countplot(y=car_data[col])
+#     plt.title(f"Countplot of {col}")
+#     plt.show()
+
+# Calculate the number of rows and columns for subplots
+num_cols = len(categorical_cols)
+num_rows = (num_cols + 2) // 4  # Adjust the number of rows based on the number of columns and desired number of columns per row
+
+# Create subplots with adjusted spacing
+fig, axes = plt.subplots(num_rows, 4, figsize=(20, 5 * num_rows))
+
+# Manually adjust the spacing between subplots
+plt.subplots_adjust(hspace=0.5, wspace=1.3)
+
+# Iterate over each categorical column and plot
+for i, col in enumerate(categorical_cols):
+    ax = sns.countplot(y=car_data[col], ax=axes[i // 4, i % 4])  # Adjust indexing for row and column
+    ax.set_title(f"Countplot of {col}")
+    ax.tick_params(axis='x', rotation=45)  # Rotate x-axis labels for better readability
+    ax.tick_params(axis='y', which='major', labelsize=12)  # Increase y-axis label size
+
+    # Rotate y-axis labels and reduce label size if there are too many labels
+    if len(car_data[col].unique()) > 10:
+        ax.tick_params(axis='y', rotation=20, labelsize=8)
+        ax.get_figure().subplots_adjust(top=0.9)  # Adjust top parameter as needed
+
+    # Add counts to the end of each bar
+    for p in ax.patches:
+        ax.annotate(f'{p.get_width()}',
+                    (p.get_x() + p.get_width(), p.get_y() + p.get_height() / 2),
+                    ha='left', va='center',
+                    xytext=(5, 0), textcoords='offset points')
+
+# Hide empty subplots if necessary
+for j in range(num_cols, num_rows * 4):
+    fig.delaxes(axes[j // 4, j % 4])
+
+plt.show()
